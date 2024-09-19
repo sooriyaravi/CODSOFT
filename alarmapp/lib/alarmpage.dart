@@ -1,3 +1,5 @@
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
@@ -13,6 +15,9 @@ class Alarmpage extends StatefulWidget {
 class _AlarmpageState extends State<Alarmpage> {
   String currentTime = '';
   String currentDate = '';
+  TimeOfDay? AlarmTime;
+  
+  List<TimeOfDay> alarms = [];
   @override
   void initState() {
     super.initState();
@@ -29,9 +34,24 @@ class _AlarmpageState extends State<Alarmpage> {
     });
   }
 
+ 
+
+  void alarmpicker(BuildContext context) async {
+    final TimeOfDay? selectedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (selectedTime != null) {
+      setState(() {
+        alarms.add(selectedTime);
+      });
+     
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return Scaffold(
       appBar: AppBar(
         title: Text('Alarm'),
         backgroundColor: Colors.blue.shade400,
@@ -41,24 +61,65 @@ class _AlarmpageState extends State<Alarmpage> {
         child: Column(
           children: [
             Text(
-              currentTime,style: TextStyle(fontSize: 38,fontWeight: FontWeight.bold),
+              currentTime,
+              style: TextStyle(fontSize: 38, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(
+              height: 20,
             ),
             Text(
-              currentDate,style:  GoogleFonts.museoModerno(fontSize: 24),
-            )
+              currentDate,
+              style: GoogleFonts.museoModerno(fontSize: 24),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+           
+            Expanded(
+                child: alarms.isEmpty
+                    ? Center(
+                        child: Text(
+                          'no Alarm set',
+                          style: TextStyle(fontSize: 20, color: Colors.white),
+                        ),
+                      )
+                    : ListView.builder(
+                        itemCount: alarms.length,
+                        itemBuilder: (context, index) {
+                          final alarm = alarms[index];
+                          return ListTile(
+                            title: Text(
+                              'Alarm set for : ${alarm.format(context)}',
+                              style: GoogleFonts.poppins(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                            trailing: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    alarms.removeAt(index);
+                                  });
+                                },
+                                icon: Icon(Icons.delete)),
+                          );
+                        },
+                      ))
           ],
         ),
       ),
-      floatingActionButton:FloatingActionButton(
-        onPressed: (){},
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          alarmpicker(context);
+        },
         backgroundColor: Colors.white.withOpacity(0.2),
-        child: Icon(Icons.add,size:40,color: Colors.white,),
+        child: Icon(
+          Icons.add,
+          size: 40,
+          color: Colors.white,
+        ),
         elevation: 0,
         shape: CircleBorder(),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
-    
   }
 }
