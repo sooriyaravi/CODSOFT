@@ -1,4 +1,4 @@
-import 'package:alarmapp/alarmpage.dart';
+
 import 'package:alarmapp/splash.dart';
 import 'package:flutter/material.dart';
 
