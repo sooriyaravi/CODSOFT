@@ -1,4 +1,5 @@
 import 'package:alarmapp/alarmpage.dart';
+import 'package:alarmapp/splash.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
      debugShowCheckedModeBanner: false,
-      home: Alarmpage(),
+      home: Splash(),
     );
   }
 }

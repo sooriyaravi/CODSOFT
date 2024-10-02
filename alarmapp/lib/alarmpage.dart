@@ -51,17 +51,13 @@ class _AlarmpageState extends State<Alarmpage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Alarm'),
-        backgroundColor: Colors.blue.shade400,
-      ),
-      backgroundColor: Colors.blue.shade400,
+      backgroundColor: Colors.blue.shade100,
       body: Center(
         child: Column(
           children: [
             Text(
               currentTime,
-              style: TextStyle(fontSize: 38, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 38, fontWeight: FontWeight.normal),
             ),
             SizedBox(
               height: 20,
