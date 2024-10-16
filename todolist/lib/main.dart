@@ -1,9 +1,7 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:todolist/storage.dart';
 import 'package:todolist/taskcreation.dart';
-
+import 'package:todolist/history.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -42,9 +40,17 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  void deleteTask(int index) {
+    setState(() {
+      taskhistory.add(tasks[index]);
+      tasks.removeAt(index);
+      saveTasks();
+    });
+  }
+
   void deleteTaskFromHistory(int index) {
     setState(() {
-      taskHistory.removeAt(index);
+      taskhistory.removeAt(index);
       saveTasks();
     });
   }
@@ -68,122 +74,152 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         backgroundColor: Colors.white,
         actions: [
-          IconButton(onPressed: (){
-            Navigator.push(context, MaterialPageRoute(builder: (context)=>taskhistoryScreen(taskHistory:taskhistory,
-            onDelete:deleteTaskFromHistory,),
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TaskHistoryScreen(
+                    taskHistory: taskhistory,
+                    onDelete: deleteTaskFromHistory,
+                  ),
+                ),
+              );
+            },
+            icon: const Icon(
+              Icons.history,
+              color: Colors.deepOrange,
             ),
-            ),
-          }, 
-          icon: const Icon(Icons.history,color: Colors.deepOrange,),
           ),
         ],
       ),
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          Padding(padding: const EdgeInsets.all(8.0),
-          child: LinearProgressIndicator(
-            value: getCompletedPercentage(),
-            backgroundColor: Colors.grey[300],
-            valueColor: const AlwaysStoppedAnimation<Color>(Color.fromARGB(255, 28, 220, 25)),
-          ),),
-          Expanded(child: tasks.isEmpty?Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset('assets/todolist.webp',
-                width: 200,
-                height: 200,),
-                const SizedBox(height: 20,),
-                const Text('No Tasks Available',
-                style: TextStyle(
-                  fontSize:20,
-                  color: Colors.grey,
-                ),
-                ),
-              ],
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: LinearProgressIndicator(
+              value: getCompletedPercentage(),
+              backgroundColor: Colors.grey[300],
+              valueColor: const AlwaysStoppedAnimation<Color>(
+                  Color.fromARGB(255, 28, 220, 25)),
             ),
-          )
-          :ListView.builder(itemCount:tasks.length,
-          itemBuilder: (context,index){
-            final task=tasks[index];
-            return Card(
-              margin: const EdgeInsets.symmetric(horizontal: 10,vertical: 6),
-              elevation: 4,
-              color: task.isCompleted 
-              ? Colors.green[100]
-              :const Color.fromARGB(255,219,200,202),
-              child: ListTile(
-                title: Text(
-                  task.title,
-                  style:TextStyle(
-                    decoration: task.isCompleted
-                    ? TextDecoration.lineThrough
-                    : TextDecoration.none,
-                    fontWeight:FontWeight.bold,
-                  )
-                ),
-                subtitle: Text(
-                  task.description.isNotEmpty
-                  ? task.description
-                  :'No description',
-                  style: const TextStyle(
-                    color:  Color.fromARGB(255, 0, 0, 0),
-                  ),
-                ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                   IconButton(
-                    icon: const Icon(Icons.edit, color: Colors.deepOrange,),
-                    onPressed: (){
-                    Navigator.push(context,MaterialPageRoute(
-                      builder: (context)=>TaskcreationScreen(
-                        task:task,
-                        onTaskUpdated:(updatedTask){
-                          setState(() {
-                            task[index]=updatedTask;
-                            saveTasks();
-                          });
-                        },
-                        onTaskCreated:(task){},
-                      )
-                    ),
-                    );
-                   },),
-                   IconButton(onPressed: ()=> deleteTask(index),
-                    icon: const Icon(Icons.delete,color: Colors.red,)
-                    )
-
-                  ],),
-                  onTap: ()=>toggleTaskCompletion(index),
-              ),
-            );
-          },
           ),
+          Expanded(
+            child: tasks.isEmpty
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/todolist.webp',
+                          width: 200,
+                          height: 200,
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        const Text(
+                          'No Tasks Available',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: tasks.length,
+                    itemBuilder: (context, index) {
+                      final task = tasks[index];
+                      return Card(
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 6),
+                        elevation: 4,
+                        color: task.isCompleted
+                            ? Colors.green[100]
+                            : const Color.fromARGB(255, 219, 200, 202),
+                        child: ListTile(
+                          title: Text(task.title,
+                              style: TextStyle(
+                                decoration: task.isCompleted
+                                    ? TextDecoration.lineThrough
+                                    : TextDecoration.none,
+                                fontWeight: FontWeight.bold,
+                              )),
+                          subtitle: Text(
+                            task.description.isNotEmpty
+                                ? task.description
+                                : 'No description',
+                            style: const TextStyle(
+                              color: Color.fromARGB(255, 0, 0, 0),
+                            ),
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.edit,
+                                  color: Colors.deepOrange,
+                                ),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            TaskcreationScreen(
+                                              task: task,
+                                              onTaskUpdated: (updatedTask) {
+                                                setState(() {
+                                                  tasks[index] = updatedTask;
+                                                  saveTasks();
+                                                });
+                                              },
+                                              onTaskCreated: (task) {},
+                                            )),
+                                  );
+                                },
+                              ),
+                              IconButton(
+                                  onPressed: () => deleteTask(index),
+                                  icon: const Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                  ))
+                            ],
+                          ),
+                          onTap: () => toggleTaskCompletion(index),
+                        ),
+                      );
+                    },
+                  ),
           ),
         ],
       ),
-      floatingActionButton:FloatingActionButton(
-      backgroundColor: Colors.deepOrange,
-      elevation: 0,
-      shape: const CircleBorder(),
-      onPressed: (){
-        Navigator.push(context,
-        MaterialPageRoute(builder: (context)=>TaskcreationScreen(
-          onTaskCreated:(newtask){
-            setState(() {
-              tasks.add(newTask);
-              saveTasks();
-            });
-          }
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.deepOrange,
+        elevation: 0,
+        shape: const CircleBorder(),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  TaskcreationScreen(onTaskCreated: (newTask) {
+                setState(() {
+                  tasks.add(newTask);
+                  saveTasks();
+                });
+              }),
+            ),
+          );
+        },
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
         ),
-        ),
-        );
-      },
-      child: const Icon(Icons.add,
-      color: Colors.white,
-      ),
       ),
     );
   }
